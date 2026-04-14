@@ -208,12 +208,22 @@ export function RFQDetailPage() {
             <p className="section-title">Messages ({rfq.messages?.length || 0})</p>
             {rfq.messages?.length === 0 && <p style={{ fontSize: '0.875rem', color: 'var(--gray-400)', marginBottom: 16 }}>No messages yet. Start the conversation.</p>}
             <div style={{ marginBottom: 16 }}>
-              {rfq.messages?.map((m, i) => (
-                <div key={i} style={{ padding: '10px 14px', marginBottom: 8, background: m.sender === user?._id ? 'var(--black)' : 'var(--gray-100)', borderRadius: 'var(--radius)', maxWidth: '80%', marginLeft: m.sender === user?._id ? 'auto' : 0 }}>
-                  <p style={{ fontSize: '0.875rem', color: m.sender === user?._id ? 'var(--white)' : 'var(--gray-800)', marginBottom: 2 }}>{m.content}</p>
-                  <p style={{ fontSize: '0.75rem', color: m.sender === user?._id ? 'var(--gray-400)' : 'var(--gray-500)' }}>{new Date(m.sentAt).toLocaleString()}</p>
-                </div>
-              ))}
+              {rfq.messages?.map((m, i) => {
+                const currentUserId = user?._id || user?.id;
+                const senderId = m.sender?._id || m.sender;
+                const mine = String(senderId) === String(currentUserId);
+                return (
+                  <div key={i} style={{ padding: '10px 14px', marginBottom: 8, background: mine ? 'var(--black)' : 'var(--gray-100)', borderRadius: 'var(--radius)', maxWidth: '80%', marginLeft: mine ? 'auto' : 0 }}>
+                    <div style={{ fontSize: '0.75rem', color: mine ? 'var(--gray-400)' : 'var(--gray-500)', marginBottom: 4, fontWeight: 500 }}>
+                      {mine ? 'You' : (isManufacturer ? rfq.importer?.company || rfq.importer?.name : rfq.manufacturer?.company || rfq.manufacturer?.name)}
+                    </div>
+                    <p style={{ fontSize: '0.875rem', color: mine ? 'var(--white)' : 'var(--gray-800)', marginBottom: 2 }}>{m.content}</p>
+                    <p style={{ fontSize: '0.75rem', color: mine ? 'var(--gray-400)' : 'var(--gray-500)', textAlign: mine ? 'right' : 'left' }}>
+                      {new Date(m.sentAt).toLocaleString()}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
             {!['closed','rejected'].includes(rfq.status) && (
               <form onSubmit={sendMessage} style={{ display: 'flex', gap: 8 }}>

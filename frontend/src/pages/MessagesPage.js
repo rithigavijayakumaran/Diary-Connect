@@ -83,9 +83,14 @@ export default function MessagesPage() {
             {/* Messages */}
             <div style={{ flex: 1, padding: '16px 20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, minHeight: 360 }}>
               {messages.map((m, i) => {
-                const mine = m.sender?._id === user?._id || m.sender === user?._id;
+                const currentUserId = user?._id || user?.id;
+                const senderId = m.sender?._id || m.sender;
+                const mine = String(senderId) === String(currentUserId);
                 return (
-                  <div key={i} style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start' }}>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start', marginBottom: 12 }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--gray-500)', marginBottom: 4, padding: '0 4px', fontWeight: 500 }}>
+                      {mine ? 'You' : (m.sender?.company || m.sender?.name || active.partner?.company || active.partner?.name || 'Partner')}
+                    </div>
                     <div style={{
                       maxWidth: '70%', padding: '10px 14px',
                       background: mine ? 'var(--black)' : 'var(--gray-100)',
@@ -94,7 +99,7 @@ export default function MessagesPage() {
                       fontSize: '0.875rem', lineHeight: 1.5
                     }}>
                       <div>{m.content}</div>
-                      <div style={{ fontSize: '0.7rem', color: mine ? 'var(--gray-400)' : 'var(--gray-400)', marginTop: 4 }}>
+                      <div style={{ fontSize: '0.7rem', color: mine ? 'var(--gray-400)' : 'var(--gray-500)', marginTop: 4, textAlign: mine ? 'right' : 'left' }}>
                         {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
