@@ -123,7 +123,7 @@ export default function Dashboard() {
             <div className="card">
               <p className="section-title">Top Inquiry Countries</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {stats.topCountries.map(([country, count]) => (
+                {stats.topCountries.map(({ country, count }) => (
                   <div key={country} className="flex-between">
                     <span style={{ fontSize: '0.875rem', color: 'var(--gray-700)' }}>{country}</span>
                     <span style={{ fontSize: '0.875rem', fontWeight: 600, fontFamily: 'var(--mono)' }}>{count}</span>
