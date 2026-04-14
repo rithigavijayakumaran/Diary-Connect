@@ -16,8 +16,8 @@ async function fetchAnalytics(token) {
 }
 
 // ─── Color palettes ───────────────────────────────────────────────────────────
-const GRAYS = ['#0a0a0a','#262626','#404040','#525252','#737373','#a3a3a3','#d4d4d4','#e5e5e5'];
-const HEAT  = ['#f0f0f0','#d4d4d4','#a3a3a3','#737373','#404040','#171717'];
+const CATEGORY_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f43f5e', '#14b8a6'];
+const HEAT  = ['#e0e7ff', '#c7d2fe', '#818cf8', '#6366f1', '#4338ca', '#312e81'];
 
 function heatColor(value, max) {
   const idx = Math.min(HEAT.length - 1, Math.floor((value / Math.max(max, 1)) * (HEAT.length - 1)));
@@ -25,7 +25,7 @@ function heatColor(value, max) {
 }
 
 // ─── SVG Bar Chart ────────────────────────────────────────────────────────────
-function BarChart({ data, xKey, yKey, color = '#0a0a0a', height = 180 }) {
+function BarChart({ data, xKey, yKey, color = '#5754b6ff', height = 180 }) {
   if (!data?.length) return <div className="chart-empty">No data yet</div>;
   const max = Math.max(...data.map(d => d[yKey]), 1);
   const barW = Math.max(10, Math.floor(520 / data.length) - 8);
@@ -119,7 +119,7 @@ function DonutChart({ data, labelKey, valueKey }) {
     const xi2=cx+inner*Math.cos(cum), yi2=cy+inner*Math.sin(cum);
     const lg = ang>Math.PI?1:0;
     const path=`M${x1} ${y1} A${r} ${r} 0 ${lg} 1 ${x2} ${y2} L${xi2} ${yi2} A${inner} ${inner} 0 ${lg} 0 ${xi1} ${yi1} Z`;
-    return { path, color:GRAYS[i%GRAYS.length], label:d[labelKey], value:d[valueKey] };
+    return { path, color:CATEGORY_COLORS[i%CATEGORY_COLORS.length], label:d[labelKey], value:d[valueKey] };
   });
 
   return (
@@ -154,7 +154,7 @@ function HBar({ data, labelKey, valueKey, colorFn }) {
     <div className="hbar-list">
       {data.map((d,i)=>{
         const pct=(d[valueKey]/max)*100;
-        const bg=colorFn?colorFn(d[valueKey],max):GRAYS[Math.min(i,GRAYS.length-1)];
+        const bg=colorFn?colorFn(d[valueKey],max):CATEGORY_COLORS[Math.min(i,CATEGORY_COLORS.length-1)];
         return (
           <div key={i} className="hbar-row">
             <div className="hbar-label">{d[labelKey]}</div>
@@ -395,7 +395,7 @@ export default function AnalyticsDashboard() {
               <div className="analytics-section">
                 <div className="section-title">Certification Spread (Products)</div>
                 <HBar data={certDist} labelKey="cert" valueKey="count"
-                  colorFn={(_,m)=>GRAYS[0]}/>
+                  colorFn={(_,m)=>CATEGORY_COLORS[0]}/>
               </div>
             </div>
           </>
@@ -445,8 +445,7 @@ export default function AnalyticsDashboard() {
                   </div>
                   <div className="analytics-section analytics-section-span">
                     <div className="section-title">Product Views Performance</div>
-                    <BarChart data={productPerf.map(p=>({ name:p.name, views:p.views }))}
-                      xKey="name" yKey="views" height={160} color="#262626"/>
+                    <HBar data={productPerf} labelKey="name" valueKey="views" colorFn={() => CATEGORY_COLORS[0]} />
                   </div>
                 </div>
               </>
