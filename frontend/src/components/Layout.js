@@ -56,7 +56,7 @@ export default function Layout({ children }) {
             }}>
               <span style={{ color: 'var(--white)', fontSize: '0.75rem', fontWeight: 700 }}>DB</span>
             </div>
-            <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.02em' }}>DairyBridge</span>
+            <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.02em' }}>DiaryConnect</span>
           </Link>
         </div>
 
@@ -106,7 +106,7 @@ export default function Layout({ children }) {
           padding: '0 28px', position: 'sticky', top: 0, zIndex: 10
         }}>
           <div style={{ fontSize: '0.875rem', color: 'var(--gray-400)' }}>
-            {user ? <>Welcome back, <span style={{ color: 'var(--gray-700)', fontWeight: 500 }}>{user.name.split(' ')[0]}</span></> : 'DairyBridge Platform'}
+            {user ? <>Welcome back, <span style={{ color: 'var(--gray-700)', fontWeight: 500 }}>{user.name.split(' ')[0]}</span></> : 'DiaryConnect Platform'}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {user?.role === 'manufacturer' && (

@@ -32,7 +32,7 @@ export default function LandingPage() {
           <div style={{ width: 28, height: 28, background: 'var(--black)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ color: 'var(--white)', fontSize: '0.7rem', fontWeight: 700 }}>DB</span>
           </div>
-          <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.02em' }}>DairyBridge</span>
+          <span style={{ fontWeight: 600, fontSize: '1rem', letterSpacing: '-0.02em' }}>DiaryConnect</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Link to="/catalog" className="btn btn-ghost btn-sm">Catalog</Link>
@@ -152,7 +152,7 @@ export default function LandingPage() {
             <div style={{ width: 22, height: 22, background: 'var(--black)', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ color: 'var(--white)', fontSize: '0.6rem', fontWeight: 700 }}>DB</span>
             </div>
-            <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>DairyBridge</span>
+            <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>DiaryConnect</span>
           </div>
           <p style={{ fontSize: '0.825rem', color: 'var(--gray-400)' }}>S8 Final Year Project · Computer Science & Engineering</p>
         </div>

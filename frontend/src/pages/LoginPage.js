@@ -11,7 +11,7 @@ const AuthShell = ({ title, subtitle, children }) => (
         <div style={{ width: 30, height: 30, background: 'var(--white)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ color: 'var(--black)', fontSize: '0.7rem', fontWeight: 700 }}>DB</span>
         </div>
-        <span style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--white)' }}>DairyBridge</span>
+        <span style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--white)' }}>DiaryConnect</span>
       </Link>
       <div>
         <h2 style={{ fontSize: '1.75rem', fontWeight: 600, color: 'var(--white)', letterSpacing: '-0.03em', lineHeight: 1.2, marginBottom: 12 }}>
@@ -103,7 +103,7 @@ export function RegisterPage() {
   };
 
   return (
-    <AuthShell title="Create account" subtitle="Join DairyBridge as a manufacturer or importer">
+    <AuthShell title="Create account" subtitle="Join DiaryConnect as a manufacturer or importer">
       <form onSubmit={handleSubmit}>
         {/* Role selector */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
