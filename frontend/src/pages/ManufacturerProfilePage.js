@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function ManufacturerProfilePage() {
   const { id } = useParams();
@@ -10,6 +11,9 @@ export default function ManufacturerProfilePage() {
   const [mfr, setMfr] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [msgText, setMsgText] = useState('');
+  const [sendingMsg, setSendingMsg] = useState(false);
+  const [showMsgBox, setShowMsgBox] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -26,6 +30,21 @@ export default function ManufacturerProfilePage() {
   if (!mfr) return <div className="empty"><h3>Manufacturer not found</h3></div>;
 
   const profile = mfr.manufacturerProfile || {};
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!msgText.trim()) return;
+    setSendingMsg(true);
+    try {
+      await axios.post('/api/messages', { receiverId: mfr._id, content: msgText });
+      toast.success('Message sent!');
+      navigate('/messages');
+    } catch (err) {
+      toast.error('Failed to send message');
+    } finally {
+      setSendingMsg(false);
+    }
+  };
 
   return (
     <div>
@@ -96,10 +115,39 @@ export default function ManufacturerProfilePage() {
           )}
 
           {user?.role === 'importer' && (
-            <button className="btn btn-primary btn-full"
-              onClick={() => navigate(`/rfq/create/${mfr._id}`)}>
-              Send RFQ to {mfr.company}
-            </button>
+            <>
+              <button className="btn btn-primary btn-full" style={{ marginBottom: 10 }}
+                onClick={() => navigate(`/rfq/create/${mfr._id}`)}>
+                Send RFQ to {mfr.company}
+              </button>
+              
+              {!showMsgBox ? (
+                <button className="btn btn-secondary btn-full" onClick={() => setShowMsgBox(true)}>
+                  Send Direct Message
+                </button>
+              ) : (
+                <div className="card" style={{ padding: 16, marginTop: 4 }}>
+                  <form onSubmit={handleSendMessage}>
+                    <textarea 
+                      className="form-textarea" 
+                      placeholder="Type your message..." 
+                      value={msgText} 
+                      onChange={e => setMsgText(e.target.value)} 
+                      required
+                      style={{ marginBottom: 10 }}
+                    />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={sendingMsg}>
+                        {sendingMsg ? 'Sending...' : 'Send'}
+                      </button>
+                      <button type="button" className="btn btn-ghost" onClick={() => setShowMsgBox(false)}>
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </>
           )}
           {!user && <Link to="/register" className="btn btn-primary btn-full">Register to Contact</Link>}
         </div>
