@@ -86,6 +86,14 @@ export function MyProductsPage() {
 
 const BLANK = { name: '', category: '', description: '', specifications: { fatContent: '', moistureContent: '', proteinContent: '', shelfLife: '', storageTemp: '', packagingFormats: '', grade: '' }, pricing: { basePrice: '', currency: 'USD', unit: 'MT', moq: '', moqUnit: 'MT' }, certifications: [], targetMarkets: '', originState: '', coldChainRequired: false };
 
+const G = ({ label, children, hint }) => (
+  <div className="form-group">
+    <label className="form-label">{label}</label>
+    {children}
+    {hint && <p className="form-hint">{hint}</p>}
+  </div>
+);
+
 export function AddProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -137,14 +145,6 @@ export function AddProductPage() {
   };
 
   if (fetching) return <div className="flex-center" style={{ height: 300 }}><div className="spinner" /></div>;
-
-  const G = ({ label, children, hint }) => (
-    <div className="form-group">
-      <label className="form-label">{label}</label>
-      {children}
-      {hint && <p className="form-hint">{hint}</p>}
-    </div>
-  );
 
   return (
     <div>
