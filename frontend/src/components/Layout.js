@@ -105,8 +105,21 @@ export default function Layout({ children }) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '0 28px', position: 'sticky', top: 0, zIndex: 10
         }}>
-          <div style={{ fontSize: '0.875rem', color: 'var(--gray-400)' }}>
-            {user ? <>Welcome back, <span style={{ color: 'var(--gray-700)', fontWeight: 500 }}>{user.name.split(' ')[0]}</span></> : 'DiaryConnect Platform'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {location.pathname !== '/' && location.pathname !== '/dashboard' && (
+              <button 
+                onClick={() => navigate(-1)} 
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-500)', fontSize: '0.85rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}
+              >
+                <span>←</span> Back
+              </button>
+            )}
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', color: 'var(--gray-400)', textTransform: 'capitalize' }}>
+              {(location.pathname === '/dashboard' || location.pathname === '/') && (
+                user ? <>Welcome back, <span style={{ color: 'var(--gray-700)', fontWeight: 500 }}>{user.name.split(' ')[0]}</span></> : 'DiaryConnect Platform'
+              )}
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {user?.role === 'manufacturer' && (
