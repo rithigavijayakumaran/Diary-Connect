@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 async function test() {
   await mongoose.connect('mongodb://localhost:27017/dairybridge');
-  const User = require('./backend/models/User');
-  const Message = require('./backend/models/Message');
+  const User = require('../models/User');
+  const Message = require('../models/Message');
 
   const messages = await Message.find({}).lean();
   if (messages.length === 0) {
