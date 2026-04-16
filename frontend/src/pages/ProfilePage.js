@@ -9,7 +9,7 @@ const MARKETS = ['GCC','EU','FDA','ORGANIC','KOSHER'];
 const INDIAN_STATES = ['Gujarat','Maharashtra','Punjab','Rajasthan','Uttar Pradesh','Andhra Pradesh','Karnataka','Tamil Nadu','Kerala','Madhya Pradesh','Haryana'];
 
 export default function ProfilePage() {
-  const { user, login } = useAuth();
+  const { user, setUser, login } = useAuth();
   const [saving, setSaving] = useState(false);
   const isManufacturer = user?.role === 'manufacturer';
 
@@ -76,7 +76,8 @@ export default function ProfilePage() {
           importRegions: form.importerProfile.importRegions.split(',').map(s => s.trim()).filter(Boolean)
         };
       }
-      await axios.put('/api/auth/profile', payload);
+      const res = await axios.put('/api/auth/profile', payload);
+      setUser(res.data.user);
       toast.success('Profile updated');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save');
