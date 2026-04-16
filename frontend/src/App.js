@@ -22,6 +22,7 @@ import CompliancePage from './pages/CompliancePage';
 import MatchPage from './pages/MatchPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPanel  from './pages/AdminPanel';
+import MyDisputesPage from './pages/MyDisputesPage';
 
 const PrivateRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -58,6 +59,7 @@ const AppRoutes = () => (
     <Route path="/messages" element={<PrivateRoute><Layout><MessagesPage /></Layout></PrivateRoute>} />
     <Route path="/analytics" element={<PrivateRoute><Layout><AnalyticsPage /></Layout></PrivateRoute>} />
     <Route path="/profile" element={<PrivateRoute><Layout><ProfilePage /></Layout></PrivateRoute>} />
+    <Route path="/disputes" element={<PrivateRoute roles={['importer','manufacturer']}><Layout><MyDisputesPage /></Layout></PrivateRoute>} />
 
     {/* Importer only */}
     <Route path="/rfq/create/:manufacturerId" element={<PrivateRoute roles={['importer']}><Layout><CreateRFQPage /></Layout></PrivateRoute>} />

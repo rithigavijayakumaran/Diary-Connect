@@ -136,6 +136,9 @@ export function RFQDetailPage() {
       toast.success('Dispute raised — admin will review it shortly');
       setDisputeOpen(false);
       setDispute({ category: 'quality', title: '', description: '' });
+      // Reload to show the banner
+      const res = await axios.get(`/api/rfq/${id}`);
+      setRfq(res.data.data);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to raise dispute');
     } finally { setDisputeSubmitting(false); }
@@ -153,7 +156,31 @@ export function RFQDetailPage() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 24 }}>
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Dispute Banner */}
+          {rfq.dispute && (
+            <div className="card" style={{ 
+              background: 'var(--gray-50)', 
+              borderLeft: '4px solid var(--black)',
+              padding: '16px 20px',
+              boxShadow: 'none'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: '1.1rem' }}>⚖️</span>
+                    <strong style={{ fontSize: '0.95rem' }}>Active Dispute: {rfq.dispute.title}</strong>
+                  </div>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--gray-500)', margin: 0 }}>
+                    Category: <strong>{rfq.dispute.category}</strong> · Status: <span className="status status-accepted" style={{ textTransform: 'capitalize', padding: '1px 8px' }}>{rfq.dispute.status.replace('_', ' ')}</span>
+                  </p>
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--gray-400)' }}>
+                  Raised {new Date(rfq.dispute.createdAt).toLocaleDateString()}
+                </div>
+              </div>
+            </div>
+          )}
           {/* Header */}
           <div className="card" style={{ marginBottom: 16 }}>
             <div className="flex-between" style={{ marginBottom: 12 }}>
@@ -285,7 +312,8 @@ export function RFQDetailPage() {
           </div>
 
           {/* Raise Dispute */}
-          {['quoted','negotiating','accepted','closed'].includes(rfq.status) && (
+          {['quoted','negotiating','accepted','closed'].includes(rfq.status) && 
+           (!rfq.dispute || ['dismissed', 'resolved_favour_raiser', 'resolved_favour_defendant'].includes(rfq.dispute.status)) && (
             <div className="card" style={{ borderColor: 'var(--gray-200)' }}>
               <p className="section-title">Issues?</p>
               <p style={{ fontSize: '0.8rem', color: 'var(--gray-500)', marginBottom: 12, lineHeight: 1.5 }}>

@@ -11,6 +11,7 @@ const NAV_MANUFACTURER = [
   { path: '/analytics',  label: 'Analytics' },
   { path: '/match',       label: 'AI Match' },
   { path: '/compliance',  label: 'Compliance' },
+  { path: '/disputes',    label: 'Disputes' },
 ];
 
 const NAV_IMPORTER = [
@@ -21,6 +22,7 @@ const NAV_IMPORTER = [
   { path: '/analytics', label: 'Analytics' },
   { path: '/match',      label: 'AI Match' },
   { path: '/compliance', label: 'Compliance' },
+  { path: '/disputes',   label: 'Disputes' },
 ];
 
 const NAV_ADMIN = [

@@ -53,7 +53,12 @@ router.get('/:id', protect, async (req, res) => {
       await rfq.save();
     }
 
-    res.json({ success: true, data: rfq });
+    // Find any associated dispute
+    const dispute = await Dispute.findOne({ rfq: rfq._id })
+      .populate('raisedBy', 'name company')
+      .populate('againstUser', 'name company');
+
+    res.json({ success: true, data: { ...rfq._doc, dispute } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -131,6 +136,19 @@ router.post('/:id/dispute', protect, authorize('importer', 'manufacturer'), asyn
     
     if (!category || !title || !description || !againstUserId) {
       return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    // Check if there is already an active dispute for this RFQ
+    const existing = await Dispute.findOne({ 
+      rfq: req.params.id, 
+      status: { $in: ['open', 'under_review'] } 
+    });
+    
+    if (existing) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'A dispute is already active for this transaction.' 
+      });
     }
 
     const dispute = await Dispute.create({
