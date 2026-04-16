@@ -39,7 +39,10 @@ router.get('/stats', async (req, res) => {
     // Subscription breakdown
     const subBreakdown = await User.aggregate([
       { $match: { role: 'manufacturer' } },
-      { $group: { _id: '$subscription.plan', count: { $sum: 1 } } },
+      { $group: { 
+          _id: { $ifNull: ['$subscription.plan', 'free'] }, 
+          count: { $sum: 1 } 
+      } },
     ]);
 
     res.json({
