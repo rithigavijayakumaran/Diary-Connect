@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const CERTS = ['FSSAI','APEDA','ISO_9001','ISO_22000','HALAL','KOSHER','ORGANIC','FDA'];
@@ -43,11 +44,6 @@ export default function ProfilePage() {
       else copy[parts[0]] = { ...copy[parts[0]], [parts[1]]: val };
       return copy;
     });
-  };
-
-  const toggleMfrCert = c => {
-    const list = form.manufacturerProfile.certifications;
-    set('manufacturerProfile.certifications', list.includes(c) ? list.filter(x => x !== c) : [...list, c]);
   };
 
   const toggleCategory = c => {
@@ -164,15 +160,32 @@ export default function ProfilePage() {
               </div>
 
               <div className="card">
-                <p className="section-title">Certifications</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {CERTS.map(c => (
-                    <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.875rem', color: 'var(--gray-700)' }}>
-                      <input type="checkbox" checked={form.manufacturerProfile.certifications.includes(c)} onChange={() => toggleMfrCert(c)} style={{ accentColor: 'var(--black)', width: 15, height: 15 }} />
-                      {c}
-                    </label>
-                  ))}
+                <div className="flex-between" style={{ marginBottom: 12 }}>
+                  <p className="section-title" style={{ marginBottom: 0 }}>Verified Certifications</p>
+                  <Link to="/dashboard" style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--black)', textDecoration: 'underline' }}>Update Certificates →</Link>
                 </div>
+                
+                {user?.manufacturerProfile?.certifications?.length > 0 ? (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {user.manufacturerProfile.certifications.map(c => (
+                      <div key={c} style={{ 
+                        padding: '6px 12px', border: '1px solid var(--gray-200)', 
+                        borderRadius: 'var(--radius)', fontSize: '0.8125rem', fontWeight: 500,
+                        background: 'var(--gray-50)', display: 'flex', alignItems: 'center', gap: 6
+                      }}>
+                        <span style={{ color: '#059669' }}>✓</span> {c}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ padding: '12px', background: 'var(--gray-50)', borderRadius: 'var(--radius)', border: '1px dashed var(--gray-300)', textAlign: 'center' }}>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--gray-500)', margin: 0 }}>No verified certificates yet.</p>
+                  </div>
+                )}
+                
+                <p style={{ fontSize: '0.75rem', color: 'var(--gray-400)', marginTop: 16, lineHeight: 1.4 }}>
+                  Certifications are verified by our team. To add or update your credentials, please upload documents from your <Link to="/dashboard" style={{ color: 'var(--gray-500)', fontWeight: 600 }}>Inquiry Dashboard</Link>.
+                </p>
               </div>
             </div>
           ) : (

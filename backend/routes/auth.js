@@ -57,8 +57,23 @@ router.get('/me', protect, async (req, res) => {
 // @PUT /api/auth/profile
 router.put('/profile', protect, async (req, res) => {
   try {
-    const updates = req.body;
+    const updates = { ...req.body };
+    
+    // Protect sensitive fields from manual user updates
     delete updates.password;
+    delete updates.role;
+    delete updates.email;
+    delete updates.isVerified;
+    delete updates.isActive;
+    delete updates.subscription;
+    delete updates.premiumLeads;
+    
+    if (updates.manufacturerProfile) {
+      delete updates.manufacturerProfile.certifications;
+      delete updates.manufacturerProfile.rating;
+      delete updates.manufacturerProfile.totalReviews;
+    }
+
     const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true }).select('-password');
     res.json({ success: true, user });
   } catch (err) {
