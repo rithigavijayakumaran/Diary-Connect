@@ -154,7 +154,6 @@ export default function LandingPage() {
             </div>
             <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>DiaryConnect</span>
           </div>
-          <p style={{ fontSize: '0.825rem', color: 'var(--gray-400)' }}>S8 Final Year Project · Computer Science & Engineering</p>
         </div>
       </footer>
     </div>
