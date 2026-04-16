@@ -4,37 +4,55 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const NAV_MANUFACTURER = [
-  { path: '/dashboard', label: 'Dashboard' },
+  { path: '/dashboard',   label: 'Dashboard' },
   { path: '/my-products', label: 'My Products' },
-  { path: '/rfq', label: 'Inquiries' },
-  { path: '/messages', label: 'Messages' },
-  { path: '/analytics', label: 'Analytics' },
-  { path: '/match', label: 'AI Match' },
-  { path: '/compliance', label: 'Compliance' },
+  { path: '/rfq',         label: 'Inquiries' },
+  { path: '/messages',    label: 'Messages' },
+  { path: '/analytics',  label: 'Analytics' },
+  { path: '/match',       label: 'AI Match' },
+  { path: '/compliance',  label: 'Compliance' },
 ];
 
 const NAV_IMPORTER = [
-  { path: '/dashboard', label: 'Dashboard' },
-  { path: '/catalog', label: 'Product Catalog' },
-  { path: '/rfq', label: 'My RFQs' },
-  { path: '/messages', label: 'Messages' },
+  { path: '/dashboard',  label: 'Dashboard' },
+  { path: '/catalog',    label: 'Product Catalog' },
+  { path: '/rfq',        label: 'My RFQs' },
+  { path: '/messages',   label: 'Messages' },
   { path: '/analytics', label: 'Analytics' },
-  { path: '/match', label: 'AI Match' },
+  { path: '/match',      label: 'AI Match' },
   { path: '/compliance', label: 'Compliance' },
+];
+
+const NAV_ADMIN = [
+  { path: '/admin?tab=overview', label: 'Dashboard' },
+  { path: '/admin?tab=certs',    label: 'Cert Review' },
+  { path: '/admin?tab=users',    label: 'Users & Plans' },
+  { path: '/admin?tab=disputes', label: 'Disputes' },
 ];
 
 export default function Layout({ children }) {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const currentPathWithQuery = location.pathname + location.search;
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const navItems = user?.role === 'manufacturer' ? NAV_MANUFACTURER : NAV_IMPORTER;
+  const navItems = user?.role === 'manufacturer' ? NAV_MANUFACTURER
+                 : user?.role === 'admin'        ? NAV_ADMIN
+                 : NAV_IMPORTER;
 
   const handleLogout = () => {
     logout();
     toast.success('Logged out');
     navigate('/');
+  };
+
+  const isNavItemActive = (itemPath) => {
+    if (user?.role === 'admin') {
+      // For admin, query params matter (tab=...)
+      return currentPathWithQuery === itemPath || (itemPath === '/admin?tab=overview' && location.pathname === '/admin' && !location.search);
+    }
+    return location.pathname === itemPath || location.pathname.startsWith(itemPath + '/');
   };
 
   return (
@@ -63,7 +81,7 @@ export default function Layout({ children }) {
         {/* Nav */}
         <nav style={{ flex: 1, padding: '12px 10px', overflowY: 'auto' }}>
           {navItems.map(item => {
-            const active = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            const active = isNavItemActive(item.path);
             return (
               <Link key={item.path} to={item.path} style={{
                 display: 'block', padding: '8px 10px', marginBottom: 2,
@@ -85,9 +103,11 @@ export default function Layout({ children }) {
         {/* User block */}
         {user && (
           <div style={{ padding: '12px 14px', borderTop: '1px solid var(--gray-100)' }}>
-            <Link to="/profile" style={{ display: 'block', marginBottom: 8 }}>
+            <Link to={user.role === 'admin' ? '/admin' : '/profile'} style={{ display: 'block', marginBottom: 8 }}>
               <div style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--gray-900)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name}</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--gray-400)', textTransform: 'capitalize' }}>{user.role} · {user.country}</div>
+              <div style={{ fontSize: '0.8rem', color: user.role === 'admin' ? 'var(--gray-700)' : 'var(--gray-400)', textTransform: 'capitalize', fontWeight: user.role === 'admin' ? 600 : 400 }}>
+                {user.role === 'admin' ? 'Administrator' : `${user.role} · ${user.country}`}
+              </div>
             </Link>
             <button onClick={handleLogout} className="btn btn-ghost btn-sm" style={{ width: '100%', justifyContent: 'flex-start', color: 'var(--gray-500)', fontSize: '0.8125rem' }}>
               Sign out
@@ -127,6 +147,9 @@ export default function Layout({ children }) {
             )}
             {user?.role === 'importer' && (
               <Link to="/catalog" className="btn btn-primary btn-sm">Browse Catalog</Link>
+            )}
+            {user?.role === 'admin' && (
+              <Link to="/admin" className="btn btn-primary btn-sm">⚙ Admin Panel</Link>
             )}
           </div>
         </div>

@@ -21,6 +21,7 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import CompliancePage from './pages/CompliancePage';
 import MatchPage from './pages/MatchPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminPanel  from './pages/AdminPanel';
 
 const PrivateRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -66,6 +67,9 @@ const AppRoutes = () => (
     <Route path="/my-products" element={<PrivateRoute roles={['manufacturer']}><Layout><MyProductsPage /></Layout></PrivateRoute>} />
     <Route path="/products/add" element={<PrivateRoute roles={['manufacturer']}><Layout><AddProductPage /></Layout></PrivateRoute>} />
     <Route path="/products/edit/:id" element={<PrivateRoute roles={['manufacturer']}><Layout><AddProductPage /></Layout></PrivateRoute>} />
+
+    {/* Admin only */}
+    <Route path="/admin" element={<PrivateRoute roles={['admin']}><Layout><AdminPanel /></Layout></PrivateRoute>} />
 
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>

@@ -1,24 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import CertUploadPanel from './certUploadPanel';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
-  const [rfqs, setRfqs] = useState([]);
+  const [rfqs, setRfqs]   = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Admin has nothing to see here — send straight to admin panel
   useEffect(() => {
+    if (!user) return; // Wait for user object to be available
+    if (user.role === 'admin') { navigate('/admin', { replace: true }); return; }
+    
     Promise.all([
       axios.get('/api/analytics/dashboard'),
       axios.get('/api/rfq/my')
     ]).then(([s, r]) => {
       setStats(s.data.data);
       setRfqs(r.data.data.slice(0, 5));
-    }).finally(() => setLoading(false));
-  }, []);
+    })
+    .catch(err => {
+      console.error('Dashboard data fetch error:', err);
+    })
+    .finally(() => setLoading(false));
+  }, [user, navigate]);
 
+  if (!user || user.role === 'admin') return null;
   if (loading) return <div className="flex-center" style={{ height: 300 }}><div className="spinner" /></div>;
 
   const isManufacturer = user?.role === 'manufacturer';
@@ -107,15 +118,19 @@ export default function Dashboard() {
           <div className="card">
             <p className="section-title">Quick Actions</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {isManufacturer ? <>
-                <Link to="/products/add" className="btn btn-primary">+ Add New Product</Link>
-                <Link to="/my-products" className="btn btn-secondary">Manage Listings</Link>
-                <Link to="/analytics" className="btn btn-secondary">View Analytics</Link>
-              </> : <>
-                <Link to="/catalog" className="btn btn-primary">Browse Catalog</Link>
-                <Link to="/match" className="btn btn-secondary">AI Recommendations</Link>
-                <Link to="/compliance" className="btn btn-secondary">Compliance Wizard</Link>
-              </>}
+          {isManufacturer ? (
+            <>
+              <Link to="/products/add" className="btn btn-primary">+ Add New Product</Link>
+              <Link to="/my-products" className="btn btn-secondary">Manage Listings</Link>
+              <Link to="/analytics" className="btn btn-secondary">View Analytics</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/catalog" className="btn btn-primary">Browse Catalog</Link>
+              <Link to="/match" className="btn btn-secondary">AI Recommendations</Link>
+              <Link to="/compliance" className="btn btn-secondary">Compliance Wizard</Link>
+            </>
+          )}
             </div>
           </div>
 
@@ -148,6 +163,9 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Cert upload for manufacturers */}
+      {isManufacturer && <CertUploadPanel />}
     </div>
   );
 }

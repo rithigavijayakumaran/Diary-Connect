@@ -21,7 +21,8 @@ app.use('/api/messages', require('./routes/messages'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/compliance', require('./routes/compliance'));
 app.use('/api/match', require('./routes/match'));
-app.use('/api/admin', require('./routes/admin'));
+app.use('/api/certs',  require('./routes/certUpload')); // manufacturer cert uploads
+app.use('/api/admin',  require('./routes/admin'));
 
 // Health check
 app.get('/', (req, res) => res.json({ message: 'DairyBridge API Running', version: '1.0.0' }));

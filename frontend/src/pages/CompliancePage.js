@@ -52,12 +52,12 @@ export default function CompliancePage() {
                 <button key={m.code} onClick={() => selectMarket(m.code)}
                   style={{
                     padding: '14px 12px', border: `1.5px solid ${selected === m.code ? 'var(--black)' : 'var(--gray-200)'}`,
-                    borderRadius: 'var(--radius-lg)', background: selected === m.code ? 'var(--black)' : 'var(--white)',
+                    borderRadius: 'var(--radius-lg)', background: selected === m.code ? 'var(--gray-100)' : 'var(--white)',
                     cursor: 'pointer', textAlign: 'left', transition: 'all var(--transition)'
                   }}>
                   <div style={{ fontSize: '1.1rem', marginBottom: 4 }}>{m.flag}</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: selected === m.code ? 'var(--white)' : 'var(--gray-800)' }}>{m.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: selected === m.code ? 'var(--gray-400)' : 'var(--gray-400)', marginTop: 2 }}>Duty: {m.importDuty}</div>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--gray-800)' }}>{m.name}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--gray-400)', marginTop: 2 }}>Duty: {m.importDuty}</div>
                 </button>
               ))}
             </div>

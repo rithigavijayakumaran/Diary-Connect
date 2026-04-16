@@ -151,9 +151,14 @@ router.get('/dashboard', protect, async (req, res) => {
             .map(([country, count]) => ({ country, count })),
         }
       });
+    } else {
+      // If none of the roles match (e.g., admin), send a 403 or empty data
+      // This prevents the request from hanging
+      return res.status(403).json({ success: false, message: 'Access denied for this role' });
     }
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error('Analytics dashboard error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const RFQ = require('../models/RFQ');
 const Product = require('../models/Product');
+const Dispute = require('../models/Dispute');
 const { protect, authorize } = require('../middleware/auth');
 
 // @POST /api/rfq - importer creates RFQ
@@ -118,6 +119,48 @@ router.get('/stats/overview', protect, async (req, res) => {
     ]);
 
     res.json({ success: true, data: { total, pending, quoted, accepted } });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// @POST /api/rfq/:id/dispute - raise a dispute for an RFQ
+router.post('/:id/dispute', protect, authorize('importer', 'manufacturer'), async (req, res) => {
+  try {
+    const { category, title, description, againstUserId } = req.body;
+    
+    if (!category || !title || !description || !againstUserId) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    const dispute = await Dispute.create({
+      rfq: req.params.id,
+      raisedBy: req.user._id,
+      againstUser: againstUserId,
+      category,
+      title,
+      description,
+      status: 'open',
+    });
+
+    res.status(201).json({ success: true, data: dispute });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// @GET /api/rfq/my/disputes - get user's related disputes
+router.get('/my/disputes/list', protect, async (req, res) => {
+  try {
+    const disputes = await Dispute.find({
+      $or: [{ raisedBy: req.user._id }, { againstUser: req.user._id }],
+    })
+      .populate('raisedBy', 'name company')
+      .populate('againstUser', 'name company')
+      .populate('rfq', 'title productCategory status')
+      .sort({ createdAt: -1 });
+      
+    res.json({ success: true, data: disputes });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
