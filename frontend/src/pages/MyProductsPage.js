@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { AuthContext } from '../context/AuthContext';
 
 const CATEGORIES = ['Ghee','Skimmed Milk Powder','Whole Milk Powder','Butter','Cheese','Paneer','Whey Protein','Casein','UHT Milk','Condensed Milk','Lactose','Cream','Yogurt','Other'];
 const CERTS = ['FSSAI','APEDA','ISO_9001','ISO_22000','HALAL','KOSHER','ORGANIC','FDA'];
@@ -32,7 +33,6 @@ export function MyProductsPage() {
           <h1>My Products</h1>
           <p>{products.length} listings</p>
         </div>
-        <Link to="/products/add" className="btn btn-primary">+ Add Product</Link>
       </div>
 
       {products.length === 0 ? (
@@ -97,10 +97,25 @@ const G = ({ label, children, hint }) => (
 export function AddProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
   const [form, setForm] = useState(BLANK);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(!!id);
+  const [approvedCerts, setApprovedCerts] = useState([]);
+  const [certsLoading, setCertsLoading] = useState(true);
   const isEdit = !!id;
+
+  // Load only APPROVED certs from the manufacturer's profile
+  useEffect(() => {
+    if (!token) return;
+    axios.get('/api/auth/me')
+      .then(r => {
+        const docs = r.data.user?.certDocuments || [];
+        const approved = docs.filter(d => d.status === 'approved').map(d => d.type);
+        setApprovedCerts(approved);
+      })
+      .finally(() => setCertsLoading(false));
+  }, [token]);
 
   useEffect(() => {
     if (id) {
@@ -215,13 +230,30 @@ export function AddProductPage() {
           <div>
             <div className="card" style={{ marginBottom: 16 }}>
               <p className="section-title">Certifications</p>
-              <p style={{ fontSize: '0.8rem', color: 'var(--gray-400)', marginBottom: 12 }}>Select all that apply</p>
-              {CERTS.map(c => (
-                <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={form.certifications.includes(c)} onChange={() => toggleCert(c)} style={{ accentColor: 'var(--black)', width: 15, height: 15 }} />
-                  <span style={{ fontSize: '0.875rem', color: 'var(--gray-700)' }}>{c}</span>
-                </label>
-              ))}
+              {certsLoading ? (
+                <div className="flex-center" style={{ padding: 20 }}><div className="spinner" /></div>
+              ) : approvedCerts.length === 0 ? (
+                <div style={{ padding: '12px 0' }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--gray-500)', marginBottom: 8 }}>
+                    No verified certifications yet.
+                  </p>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--gray-400)', lineHeight: 1.5 }}>
+                    Upload your certificate documents from the <strong>Dashboard</strong>. Once an admin approves them, they'll appear here and automatically be attached to your products.
+                  </p>
+                  <Link to="/dashboard" className="btn btn-secondary btn-sm" style={{ marginTop: 10 }}>Go to Dashboard →</Link>
+                </div>
+              ) : (
+                <>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--gray-400)', marginBottom: 12 }}>Only your admin-verified certifications are shown</p>
+                  {approvedCerts.map(c => (
+                    <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, cursor: 'pointer' }}>
+                      <input type="checkbox" checked={form.certifications.includes(c)} onChange={() => toggleCert(c)} style={{ accentColor: 'var(--black)', width: 15, height: 15 }} />
+                      <span style={{ fontSize: '0.875rem', color: 'var(--gray-700)' }}>{c}</span>
+                      <span style={{ fontSize: '0.7rem', background: 'var(--black)', color: 'var(--white)', borderRadius: 20, padding: '1px 7px', marginLeft: 2 }}>✓ Verified</span>
+                    </label>
+                  ))}
+                </>
+              )}
             </div>
 
             <div style={{ position: 'sticky', top: 80 }}>
